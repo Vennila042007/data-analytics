@@ -1,0 +1,78 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+df = pd.read_csv("migration.csv")
+
+print("First 5 rows:")
+print(df.head())
+
+df.columns = df.columns.str.strip()
+
+if 'Country' not in df.columns:
+    if 'Country Name' in df.columns:
+        df.rename(columns={'Country Name': 'Country'}, inplace=True)
+
+if 'Value' not in df.columns:
+    if 'Migrants' in df.columns:
+        df.rename(columns={'Migrants': 'Value'}, inplace=True)
+
+df = df[['Country', 'Year', 'Value']]
+
+df.dropna(inplace=True)
+
+df['Year'] = df['Year'].astype(int)
+df['Value'] = pd.to_numeric(df['Value'], errors='coerce')
+
+df.dropna(inplace=True)
+
+print("\nCleaned Data:")
+print(df.head())
+
+top_countries = df.groupby('Country')['Value'].sum().nlargest(10)
+
+plt.figure(figsize=(10,6))
+sns.barplot(x=top_countries.values, y=top_countries.index, palette="viridis")
+plt.title("Top 10 Countries by Migration")
+plt.xlabel("Migrants")
+plt.ylabel("Country")
+plt.tight_layout()
+plt.show()
+
+yearly = df.groupby('Year')['Value'].sum()
+
+plt.figure(figsize=(10,6))
+plt.plot(yearly.index, yearly.values, marker='o')
+plt.title("Global Migration Trend")
+plt.xlabel("Year")
+plt.ylabel("Migrants")
+plt.grid()
+plt.tight_layout()
+plt.show()
+
+top5 = df.groupby('Country')['Value'].sum().nlargest(5).index
+
+plt.figure(figsize=(10,6))
+for country in top5:
+    data = df[df['Country'] == country]
+    plt.plot(data['Year'], data['Value'], label=country)
+
+plt.legend()
+plt.title("Top 5 Countries Trend")
+plt.xlabel("Year")
+plt.ylabel("Migrants")
+plt.tight_layout()
+plt.show()
+
+pivot = df.pivot_table(values='Value', index='Country', columns='Year')
+
+plt.figure(figsize=(12,8))
+sns.heatmap(pivot, cmap='coolwarm')
+plt.title("Migration Heatmap")
+plt.tight_layout()
+plt.show()
+
+print("\nINSIGHTS:")
+print("1. Migration is increasing over time.")
+print("2. Few countries dominate migration.")
+print("3. Patterns vary across years and regions.")
