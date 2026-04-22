@@ -1,0 +1,15 @@
+First 5 rows:
+  Country  Year     Value
+0   India  2010   5000000
+1   India  2015   5500000
+2   India  2020   6000000
+3   India  2022   6200000
+4     USA  2010  45000000
+
+Cleaned Data:
+  Country  Year     Value
+0   India  2010   5000000
+1   India  2015   5500000
+2   India  2020   6000000
+3   India  2022   6200000
+4     USA  2010  45000000
